@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}{% if category %}{{ category.name }}{% else %}Products{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{% if category %}{{ category.name }}{% else %}All Products{% endif %}</h1>
+    </div>
+    <div class="col-md-4">
+        <form class="d-flex" method="get">
+            <input class="form-control me-2" type="search" name="q" placeholder="Search products..." value="{{ query }}">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="list-group mb-4">
+            <a href="{% url 'products:list' %}"
+               class="list-group-item list-group-item-action {% if not category %}active{% endif %}">
+                All Categories
+            </a>
+            {% for cat in categories %}
+                <a href="{% url 'products:category' cat.slug %}"
+                   class="list-group-item list-group-item-action {% if category and category.slug == cat.slug %}active{% endif %}">
+                    {{ cat.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-9">
+        {% if products %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for product in products %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                            {% elif product.imageUrl %}
+                                <img src="{{ product.imageUrl }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                {% if product.category %}
+                                    <span class="badge bg-secondary mb-2 align-self-start">{{ product.category.name }}</span>
+                                {% endif %}
+                                <p class="card-text fw-bold fs-5 text-primary">${{ product.price|floatformat:2|intcomma }}</p>
+                                <p class="card-text small text-muted">{{ product.description|truncatewords:20 }}</p>
+                                <div class="mt-auto d-flex gap-2">
+                                    <a href="{% url 'products:detail' product.slug %}" class="btn btn-outline-primary btn-sm flex-grow-1">Details</a>
+                                    <a href="{% url 'cart:add' product.id %}" class="btn btn-primary btn-sm flex-grow-1">Add to Cart</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                {% if query %}
+                    No products found matching "{{ query }}".
+                {% else %}
+                    No products available in this category.
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

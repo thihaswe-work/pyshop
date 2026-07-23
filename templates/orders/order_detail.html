@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'orders:history' %}">My Orders</a></li>
+        <li class="breadcrumb-item active">Order #{{ order.id }}</li>
+    </ol>
+</nav>
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between">
+        <h5 class="mb-0">Order #{{ order.id }}</h5>
+        <span class="badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% elif order.status == 'shipped' %}info{% else %}warning{% endif %} fs-6">
+            {{ order.get_status_display }}
+        </span>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Full Name:</strong> {{ order.full_name }}</p>
+                <p><strong>Email:</strong> {{ order.email }}</p>
+                <p><strong>Phone:</strong> {{ order.phone }}</p>
+                <p><strong>Address:</strong> {{ order.address }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
+                <p><strong>Total:</strong> <span class="fw-bold fs-5">${{ order.total|floatformat:2|intcomma }}</span></p>
+                {% if order.notes %}
+                    <p><strong>Notes:</strong> {{ order.notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{% url 'orders:history' %}" class="btn btn-outline-secondary mt-3">Back to Orders</a>
+{% endblock %}

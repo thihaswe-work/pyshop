@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<h1>Checkout</h1>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Shipping Details</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="full_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" name="phone" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="address" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Order Notes (optional)</label>
+                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Place Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Order Summary</h5>
+                <ul class="list-group list-group-flush">
+                    {% for item in cart.items.all %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>{{ item.product.name }} × {{ item.quantity }}</span>
+                            <span>${{ item.total_price|floatformat:2|intcomma }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="d-flex justify-content-between mt-3">
+                    <strong>Total</strong>
+                    <strong class="fs-5">${{ cart.total_price|floatformat:2|intcomma }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
